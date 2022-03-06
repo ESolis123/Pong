@@ -31,6 +31,7 @@ public class Bola : MonoBehaviour
     public GameObject centro, botonesDeSalida;
     public Text contadorIzquierda, contadorDerecha;
     public AudioClip  audioRaqueta, audioGol, audioRebote, audioInicio, audioFin;
+    public AudioSource fuenteAudio;
 
     public void Start()
     {
@@ -39,10 +40,11 @@ public class Bola : MonoBehaviour
         PlayClip(audioInicio);
     }
 
-    void PlayClip(AudioClip clip)
+    float PlayClip(AudioClip clip)
     {
-        GetComponent<AudioSource>().clip = clip;
-        GetComponent<AudioSource>().Play();
+        fuenteAudio.clip = clip;
+        fuenteAudio.Play();
+        return clip.length;
     }
 
     void RevisarParametrosDelJuego()
@@ -50,7 +52,7 @@ public class Bola : MonoBehaviour
         if(GameManager.modoDeJuego == Modos.Goles)
         {
             if(golesDerecha >= GameManager.totalDeGoles || golesIzquierda >= GameManager.totalDeGoles)
-                TerminarJuego();
+               TerminarJuego();
         }
 
         else if(GameManager.modoDeJuego == Modos.Temporizador)
