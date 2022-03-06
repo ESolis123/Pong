@@ -4,9 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 public class Bola : MonoBehaviour
 {
-    public float velocidad = 30.0f;
+    private float velocidad = 30.0f;
     public int golesIzquierda = 0, golesDerecha = 0;
-
     public int GolesDerecha
     {
         set
@@ -31,20 +30,19 @@ public class Bola : MonoBehaviour
 
     public GameObject centro, botonesDeSalida;
     public Text contadorIzquierda, contadorDerecha;
-    public AudioClip  audioRaqueta, audioGol, audioRebote;
-    private AudioSource fuenteAudio;
+    public AudioClip  audioRaqueta, audioGol, audioRebote, audioInicio, audioFin;
 
     public void Start()
     {
         GetComponent<Rigidbody2D>().velocity = Vector2.right * velocidad;
-        fuenteAudio = GetComponent<AudioSource>();
         GameManager.juegoEnProceso = true;
+        PlayClip(audioInicio);
     }
 
     void PlayClip(AudioClip clip)
     {
-        fuenteAudio.clip = clip;
-        fuenteAudio.Play();
+        GetComponent<AudioSource>().clip = clip;
+        GetComponent<AudioSource>().Play();
     }
 
     void RevisarParametrosDelJuego()
@@ -64,6 +62,7 @@ public class Bola : MonoBehaviour
 
     void TerminarJuego()
     {
+        PlayClip(audioFin);
         GameManager.juegoEnProceso = false;
         transform.position = Vector2.zero;
 
@@ -109,7 +108,6 @@ public class Bola : MonoBehaviour
     void ReiniciarBola(string direccion)
     {
         transform.position = Vector2.zero;
-        velocidad = 30;
 
         if (direccion == "Derecha")
         {
@@ -124,15 +122,17 @@ public class Bola : MonoBehaviour
             contadorIzquierda.text = golesIzquierda.ToString();
             GetComponent<Rigidbody2D>().velocity = Vector2.left * velocidad;
         }
+
+        if(velocidad<200)
+            IncrementarDificultad(10);
     }
 
-    void IncrementarDificultad() => velocidad += 0.01f;
+    void IncrementarDificultad(int multiplier) => velocidad += multiplier;
 
     void Update()
     {
         if(GameManager.juegoEnProceso)
         {
-            IncrementarDificultad();
             RevisarParametrosDelJuego();
         }
     }
